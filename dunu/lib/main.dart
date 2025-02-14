@@ -1,136 +1,90 @@
+import 'package:dunu/Home.dart';
+import 'package:dunu/search.dart';
 import 'package:flutter/material.dart';
+import 'package:circle_nav_bar/circle_nav_bar.dart';
 
 void main() {
-  runApp(const MaterialApp(
-    
-    home: HomePage(),
+  runApp(MaterialApp(
+    theme: ThemeData(
+        primarySwatch: Colors.blue
+      ),
+    home: const GetStarted(),
   ));
 }
-class HomePage extends StatefulWidget{
-  const HomePage({super.key});
-
+class GetStarted extends StatefulWidget{
+  const GetStarted({super.key});
   @override
-  State<HomePage> createState() {
-    return HomePageState();
+  State<GetStarted> createState() {
+    return GetStartedState();
   } 
 }
 
-final List<Map<String,String>> Categories = [
-  { "image":"assets/images/breakfast.png",
-    "texte":"breakfast"
-  },
-  { "image":"assets/images/breakfast.png",
-    "texte":"Lunch"
-  },
-  { "image":"assets/images/breakfast.png",
-    "texte":"Dinner"
-  },
-  { "image":"assets/images/breakfast.png",
-    "texte":"fast food"
-  },
-  { "image":"assets/images/breakfast.png",
-    "texte":"Gouter"
-  },
-  { "image":"assets/images/avat.jpg",
-    "texte":"Sain"
-  },
-  { "image":"assets/images/breakfast.png",
-    "texte":"Plus"
+class GetStartedState extends State<GetStarted> with SingleTickerProviderStateMixin {
+  int _tabIndex = 1;
+  int get tabIndex => _tabIndex;
+  set tabIndex(int v) {
+    _tabIndex = v;
+    setState(() {});
   }
-];
+  int indexSelectionne = 0;
+  late PageController pageController;
+  final pages = [
+    Home(),
+    Search(),
+    Search()
+  ];
+  int activeBottomNavigation = 0;
+  int activeNavBar = 0;
+  final appBar = [
+    "Hello,Anne",
+    "BOOKMARK",
+    "favorites"
+  ];
 
-class HomePageState extends State<HomePage>{
+  @override
+  void initState() {
+    super.initState();
+    pageController = PageController(initialPage: _tabIndex);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Hello,Anne",
-      style:TextStyle(fontSize: 13)),),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 18),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("What would you like\nto cook today?",
-                    style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
-                    CircleAvatar(
-                      child: Image(image: AssetImage("assets/images/avat.jpg")),
-                    )
-                ]),
-          
-            SizedBox(height: 20,),
-
-                TextField(
-                keyboardType: TextInputType.text,
-                cursorColor: Color(0xFF075E54),
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.search) ,
-                  suffixIcon: Icon(Icons.sort),
-                  hintText: 'Search any recipes',
-                  hintStyle: TextStyle(fontSize: 13),
-                  border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(80),
-                  borderSide: BorderSide(
-                  width: 0, 
-                  style: BorderStyle.none
-                  ),
-                  ),
-                filled: true,
-                contentPadding: EdgeInsets.all(16),
-                ),
-                ),
-
-            SizedBox(height: 25,),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Categories",textDirection: TextDirection.ltr,
-                style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold) ),
-                Text("See all",style: TextStyle(color: Colors.green),)
-              ],),
-            SizedBox(height: 10,),
-            SizedBox(
-              height: 65,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: Categories.length,
-                itemBuilder: (context, index) => 
-                Container(
-                  height: 20,
-                  width: 70,
-                  margin: EdgeInsets.only(right: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all()
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Image.asset(Categories[index]["image"]!, height: 20,width: 20,),
-                      SizedBox(height: 8,),
-                      Text(Categories[index]["texte"]!,style: TextStyle(fontSize: 13),)
-                    ],
-                  ))
-                ),
-              ),
-            SizedBox(height: 20,),
-             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Recommendations",textDirection: TextDirection.ltr,
-                style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold) ),
-                Text("See all",style: TextStyle(color: Colors.green),)
-              ],),
-            ]),
-         ),
-        );
-        
-        
+      appBar: AppBar(title: Text(appBar[activeNavBar],  style:TextStyle(fontSize: 13)),),
       
-    
-  }
-  
-}   
+      body:pages[activeBottomNavigation],
+      bottomNavigationBar:  CircleNavBar(
+        activeIcons: const [
+          Icon(Icons.home, color: Color.fromARGB(255, 58, 183, 89)),
+          Icon(Icons.add, color: Color.fromARGB(255, 58, 183, 89)),
+          Icon(Icons.search, color: Color.fromARGB(255, 58, 183, 89)),], 
+        
+        inactiveIcons: const [
+          Icon(Icons.home, color: Colors.grey),
+          Icon(Icons.add, color: Colors.grey),
+          Icon(Icons.search, color: Colors.grey),],
+        color: Colors.white,
+        circleColor: Colors.white,
+        height: 60,
+        circleWidth: 60,
+        activeIndex: activeBottomNavigation,
+        onTap: (v) {
+          setState(() {
+            activeBottomNavigation = v;
+            activeNavBar = v;
+          });
+          
+        },
+                
+        cornerRadius: const BorderRadius.only(
+          topLeft: Radius.circular(8),
+          topRight: Radius.circular(8),
+        
+        ),
+        shadowColor: Color.fromARGB(255, 58, 183, 89),
+        circleShadowColor: Color.fromARGB(255, 58, 183, 89),
+        elevation: 10,
+        
+      ),
+    );  
+}
+}            
